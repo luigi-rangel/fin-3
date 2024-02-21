@@ -11,8 +11,4 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get("user")
-  getUsers(): User[] {
-    return [];
-  }
 }

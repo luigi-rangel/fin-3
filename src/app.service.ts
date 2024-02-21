@@ -6,8 +6,4 @@ export class AppService {
   getHello(): string {
     return 'Hello Moto';
   }
-
-  getUsers(): User[] {
-    
-  }
 }
