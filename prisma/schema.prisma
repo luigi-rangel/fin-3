@@ -8,6 +8,65 @@ datasource db {
 }
 
 model User {
-  id   Int    @id @default(autoincrement())
-  nome String?
+  id     Int      @id @default(autoincrement())
+  nome   String?
+  wallets Wallet[]
+}
+
+model Wallet {
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime
+  name           String
+  type           Int?
+  incurranceDate DateTime?
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId Int
+
+  operationsFrom Operation[] @relation(name: "from")
+  operationsTo   Operation[] @relation(name: "to")
+}
+
+model Operation {
+  id        Int       @id @default(autoincrement())
+  type      Int
+  frequency Int
+  count     Int
+  start     DateTime
+  finish    DateTime?
+
+  walletFrom   Wallet? @relation(name: "from", fields: [walletFromId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  walletFromId Int?
+
+  walletTo   Wallet? @relation(name: "to", fields: [walletToId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  walletToId Int?
+
+  transactions Transaction[]
+  operationTags OperationTag[]
+}
+
+model Transaction {
+  id    Int      @id @default(autoincrement())
+  value Int
+  date  DateTime
+
+  operation   Operation @relation(fields: [operationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  operationId Int
+}
+
+model Tag {
+  id Int @id @default(autoincrement())
+  name String
+
+  operationTags OperationTag[]
+}
+
+model OperationTag {
+  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  operationId Int
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tagId Int
+
+  @@id([operationId, tagId])
 }
