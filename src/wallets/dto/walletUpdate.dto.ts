@@ -1,7 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 
 
-export class UpdateWalletDto {
+export class WalletUpdateDto {
     @IsNotEmpty()
     name: string
 }

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@
 import { WalletsService } from './wallets.service';
 import { Wallet } from '@prisma/client';
 import { WalletCreateDto } from './dto/walletCreate.dto';
-import { UpdateWalletDto } from './dto/walletUpdate.dto';
+import { WalletUpdateDto } from './dto/walletUpdate.dto';
 
 @Controller('wallets')
 export class WalletsController {
@@ -29,7 +29,7 @@ export class WalletsController {
   }
 
   @Put(':id')
-  async updateWallet(@Body() wallet: UpdateWalletDto, @Param('id', ParseIntPipe) id: number): Promise<Wallet> {
+  async updateWallet(@Body() wallet: WalletUpdateDto, @Param('id', ParseIntPipe) id: number): Promise<Wallet> {
     return await this.walletsService.updateWallet(wallet, id)
   }
 }
