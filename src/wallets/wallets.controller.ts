@@ -1,6 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { WalletsService } from './wallets.service';
 import { Wallet } from '@prisma/client';
+import { WalletCreateDto } from './dto/walletCreate.dto';
+import { WalletUpdateDto } from './dto/walletUpdate.dto';
 
 @Controller('wallets')
 export class WalletsController {
@@ -22,12 +24,12 @@ export class WalletsController {
   }
 
   @Post()
-  async createWallet(@Body() wallet: any): Promise<Wallet> {
+  async createWallet(@Body() wallet: WalletCreateDto): Promise<Wallet> {
     return await this.walletsService.createWallet(wallet)
   }
 
   @Put(':id')
-  async updateWallet(@Body() wallet: any, @Param('id', ParseIntPipe) id: number): Promise<Wallet> {
+  async updateWallet(@Body() wallet: WalletUpdateDto, @Param('id', ParseIntPipe) id: number): Promise<Wallet> {
     return await this.walletsService.updateWallet(wallet, id)
   }
 }
