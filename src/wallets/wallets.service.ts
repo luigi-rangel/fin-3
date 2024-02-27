@@ -1,6 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, Wallet } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { WalletCreateDto } from './dto/walletCreate.dto';
+import { UpdateWalletDto } from './dto/walletUpdate.dto';
 
 @Injectable()
 export class WalletsService {
@@ -88,16 +90,30 @@ export class WalletsService {
         }
     }
 
-    async createWallet(wallet: any): Promise<Wallet> {
-        return await this.db.wallet.create({
-            data: {
-                name: wallet.name,
-                userId: wallet.userId
+    async createWallet(wallet: WalletCreateDto): Promise<Wallet> {
+        try {
+            return await this.db.wallet.create({
+                data: {
+                    name: wallet.name,
+                    userId: wallet.userId
+                }
+            })
+        } catch(e) {
+            switch(true) {
+                case(e instanceof Prisma.PrismaClientKnownRequestError): {
+                    if(e.code ==="P2003") {
+                        throw new HttpException("Usuário não encontrado", HttpStatus.NOT_FOUND);
+                    }
+                }
+                default: {
+                    throw e;
+                }
             }
-        })
+        }
+
     }
 
-    async updateWallet(wallet: any, id: number): Promise<Wallet> {
+    async updateWallet(wallet: UpdateWalletDto, id: number): Promise<Wallet> {
         try {
             return await this.db.wallet.update({
                 where: {
