@@ -12,8 +12,8 @@ export class WalletsController {
   }
 
   @Get(':userId')
-  async getWalletsId(@Param('userId', ParseIntPipe) userId: number): Promise<any[]> {
-    return await this.walletsService.getWalletsId(userId);
+  async getWalletsByUserId(@Param('userId', ParseIntPipe) userId: number): Promise<any[]> {
+    return await this.walletsService.getWalletsByUserId(userId);
   }
 
   @Delete(':id')

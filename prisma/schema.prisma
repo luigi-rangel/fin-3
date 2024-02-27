@@ -15,7 +15,7 @@ model User {
 
 model Wallet {
   id             Int       @id @default(autoincrement())
-  createdAt      DateTime
+  createdAt      DateTime @default(now()) 
   name           String
   type           Int?
   incurranceDate DateTime?

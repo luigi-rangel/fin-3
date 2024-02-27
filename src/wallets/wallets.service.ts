@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Wallet } from '@prisma/client';
+import { Prisma, Wallet } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
@@ -37,11 +37,20 @@ export class WalletsService {
                 }
             })
         } catch (e) {
-            throw new HttpException("Carteira ou usuário não encontrado", HttpStatus.NOT_FOUND);
+            switch (true) {
+                case (e instanceof Prisma.PrismaClientKnownRequestError): {
+                    if( e.code === "P2025") {
+                        throw new HttpException("Carteira ou usuário não encontrado", HttpStatus.NOT_FOUND);
+                    }
+                }
+                default: {
+                    throw e;
+                }
+            } 
         }
     }
 
-    async getWalletsId(userId: number): Promise<any[]> {
+    async getWalletsByUserId(userId: number): Promise<any[]> {
         try {
             return await this.db.wallet.findMany({
                 where: {
@@ -56,7 +65,6 @@ export class WalletsService {
         } catch (e) {
             throw e;
         }
-
     }
 
     async deleteWallet(id: number): Promise<undefined> {
@@ -67,15 +75,22 @@ export class WalletsService {
                 }
             })
         } catch (e) {
-            throw new HttpException("Carteira não encontrada", HttpStatus.NOT_FOUND);
+            switch(true){
+                case (e instanceof Prisma.PrismaClientKnownRequestError): {
+                    if (e.code === "P2025") {
+                        throw new HttpException("Carteira não encontrada", HttpStatus.NOT_FOUND);
+                    }                
+                }
+                default: {
+                    throw e;
+                }
+            }
         }
-
     }
 
     async createWallet(wallet: any): Promise<Wallet> {
         return await this.db.wallet.create({
             data: {
-                createdAt: new Date(),
                 name: wallet.name,
                 userId: wallet.userId
             }
@@ -93,12 +108,18 @@ export class WalletsService {
                 }
             })
         } catch (e) {
-            throw new HttpException("Carteira não encontrada", HttpStatus.NOT_FOUND);
+            switch(true) {
+                case(e instanceof Prisma.PrismaClientKnownRequestError): {
+                    if (e.code === "P2025") {
+                        throw new HttpException("Carteira não encontrada", HttpStatus.NOT_FOUND);
+                    }                    
+                }
+                default: {
+                    throw e
+                }
+            }
         }
-
     }
-
-
 }
 
 
