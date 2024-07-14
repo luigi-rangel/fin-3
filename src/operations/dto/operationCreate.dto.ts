@@ -1,4 +1,5 @@
 import { OperationType } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import {
   IsDateString,
   IsInt,
@@ -8,6 +9,7 @@ import {
   ValidateIf,
   ValidationArguments,
   ValidationOptions,
+  isISO8601,
   registerDecorator,
 } from 'class-validator';
 
@@ -44,7 +46,13 @@ export class OperationCreateDto {
   frequency: number;
 
   @IsNotEmpty()
-  @IsDateString()
+  @Transform(({ value }) => {
+    const isValidDate = isISO8601(value, { strict: true, strictSeparator: true });
+    if (!isValidDate) {
+      throw new Error(`Property "from_date" should be a valid ISO8601 date string`);
+    }
+    return new Date(value);
+  })
   start: Date;
 
   @ValidateIf((o) => o.finish === null || o.finish === undefined)
@@ -53,7 +61,13 @@ export class OperationCreateDto {
   count?: number;
 
   @ValidateIf((o) => o.count === null || o.count === undefined)
-  @IsDateString()
+  @Transform(({ value }) => {
+    const isValidDate = isISO8601(value, { strict: true, strictSeparator: true });
+    if (!isValidDate) {
+      throw new Error(`Property "from_date" should be a valid ISO8601 date string`);
+    }
+    return new Date(value);
+  })
   @IsGreaterThanOrEqual('start')
   finish?: Date;
 
